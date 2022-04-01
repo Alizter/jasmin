@@ -290,24 +290,6 @@ Proof.
   by rewrite -(Z_mod_plus_full _ 1) Zmod_small;Psatz.lia.
 Qed.
 
-Lemma wunsigned_opp_if ws (a : word ws) : 
-  wunsigned (-a) = if wunsigned a == 0 then 0 else wbase ws - wunsigned a.
-Proof.
-  have ha := wunsigned_range a.
-  rewrite -(GRing.add0r (-a)%R) wunsigned_sub_if wunsigned0.
-  by case: ZleP; case: eqP => //; Psatz.lia.
-Qed.
-
-Lemma wunsigned_add_mod ws ws' (w1 w2 : word ws) :
-  wunsigned (w1 + w2) mod wsize_size ws' = (wunsigned w1 + wunsigned w2) mod wsize_size ws'.
-Proof.
-  rewrite wunsigned_add_if.
-  case: ZltP => // _.
-  rewrite Zminus_mod.
-  rewrite (Znumtheory.Zdivide_mod _ _ (wsize_size_div_wbase _ _)) Z.sub_0_r.
-  by rewrite Zmod_mod.
-Qed.
-
 Lemma wunsigned_sub_mod ws ws' (w1 w2 : word ws) :
   wunsigned (w1 - w2) mod wsize_size ws' = (wunsigned w1 - wunsigned w2) mod wsize_size ws'.
 Proof.
@@ -1510,10 +1492,6 @@ Qed.
 (** Round to the multiple of [sz'] below. *)
 Definition align_word (sz sz': wsize) (p: word sz) : word sz :=
   wand p (wrepr sz (-wsize_size sz')).
-
-Lemma align_word_U8 sz (p: word sz) :
-  align_word U8 p = p.
-Proof. by rewrite /align_word wandC wandN1. Qed.
 
 Lemma align_word_aligned (sz sz': wsize) (p: word sz) :
   wunsigned (align_word sz' p) mod wsize_size sz' == 0.
